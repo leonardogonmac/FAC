@@ -1,0 +1,104 @@
+.data
+    quebra_l: .asciiz "\n"
+    espaco: .asciiz " "
+    zero: .asciiz "0"
+
+.text
+    main: 
+        #inserir o n
+        li $v0, 5
+        syscall
+        move $s0, $v0 #salvar n em $s0
+        move $s1, $zero #contador qtde linhas
+        move $s2, $zero #contador numeros na linha
+        move $s3, $zero #zero pra printar
+
+    piramide1:
+        slt $t0, $s1, $s0 #se s1 < n, t0 = 1
+        beq $t0, $zero, entre_pir
+        addi $s1, $s1, 1 #s1++
+        jal print1 #ra = linha 19
+        move $s2, $zero
+        #quebra linha
+        li $v0, 4
+        la $a0, quebra_l
+        syscall
+        j piramide1
+    
+    printar_zero1:
+        li $v0, 1
+        move $a0, $s3
+        syscall
+        j printS1
+
+    print1:
+        slt $t1, $s2, $s1 #se s2 < s1, t1 = 1
+        beq $t1, $zero, retorno #volta para ra
+        addi $s2, $s2, 1 #s2++
+        
+        slti $t2, $s1, 10 # se s1 < 10 t2 = 1
+        beq $t2, 1, printar_zero1
+
+    printS1:
+        #printar s1
+        li $v0, 1
+        move $a0, $s1
+        syscall
+        
+        #printar espaco
+        li $v0, 4
+        la $a0, espaco
+        syscall
+        j print1
+
+    retorno: 
+        jr $ra
+
+    entre_pir:
+        #quebra linha
+        li $v0, 4
+        la $a0, quebra_l
+        syscall
+        #reinicia contadores
+        move $s1, $zero #contador qtde linhas
+        move $s2, $zero #contador numeros na linha
+
+    piramide2:
+        slt $t0, $s1, $s0 #se s1 < n, t0 = 1
+        beq $t0, $zero, fim
+        addi $s1, $s1, 1 #s1++
+        jal print2 #ra = linha 59
+        move $s2, $zero
+        #quebra linha
+        li $v0, 4
+        la $a0, quebra_l
+        syscall
+        j piramide2
+
+    printar_zero2:
+        li $v0, 1
+        move $a0, $s3
+        syscall
+        j printS2
+
+    print2:
+        slt $t1, $s2, $s1 #se s2 < s3, t1 = 1
+        beq $t1, $zero, retorno #volta para ra
+        addi $s2, $s2, 1 #s2++
+        slti $t2, $s2, 10 # se s2 < 10 t2 = 1
+        beq $t2, 1, printar_zero2
+
+    printS2:
+        #printar s2
+        li $v0, 1
+        move $a0, $s2
+        syscall
+        #printar espaco
+        li $v0, 4
+        la $a0, espaco
+        syscall
+        j print2
+    
+    fim:
+        li $v0, 10
+        syscall

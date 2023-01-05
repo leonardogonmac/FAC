@@ -1,0 +1,47 @@
+.data
+    quebra_l: .asciiz "\n"
+
+.text
+    main:
+        #Inserir n
+        li $v0, 5
+        syscall
+        #Armazenar n em $t0
+        move $t0, $v0
+        #carrega 0 em t4
+        li $t4, 0
+        #Inserir 1o numero
+        li $v0, 5
+        syscall
+        #Armazenar 1o numero em $t1
+        move $t1, $v0
+
+    insere_compara:
+        #soma 1 em t4
+        addi $t4, $t4, 1
+        #se t4 = n vai pro fim
+        beq $t4, $t0, fim
+        #Inserir 2o numero
+        li $v0, 5
+        syscall
+        #Armazenar 2o numero em $t2
+        move $t2, $v0
+        #Compara o t1 e o t2 numero
+        slt $t3, $t1, $t2  # se t1 < t2 => t3 = 1
+        beq $t3, 0, insere_compara
+        move $t1, $t2 #t1 = t2
+        #volta pra insere compara
+        j insere_compara
+
+    fim:
+        #imprime o maior numero
+        li $v0, 1
+        move $a0, $t1
+        syscall
+        #Quebra de linha
+        li $v0, 4
+        la $a0, quebra_l
+        syscall
+        #encerra o programa
+        li $v0, 10
+        syscall
