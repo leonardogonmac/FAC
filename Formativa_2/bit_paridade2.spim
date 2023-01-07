@@ -1,0 +1,32 @@
+bitparidade:
+    move $t7, $zero             #t7 = contador de iteracoes
+    move $t0, $zero             #t0 = contador de 1s
+    li $t1, 1                   #t1 = 0000001
+    j loop
+
+loop:
+    beq $t7, 7, verifia_1s
+    and $t2, $t1, $a0           #realiza operacao AND entre os bits de t1 e a0
+    beq $t2, $t1, soma          #se t2 == t1 vai para soma
+    addi $t7, $t7, 1            #contador de iteracoes ++
+    sll $t1, $t1, 1             #desloca o 1 para a esquerda
+    j loop
+
+soma:
+    addi $t0, $t0, 1            #contador de 1s ++
+    addi $t7, $t7, 1            #contador de iteracoes ++
+    sll $t1, $t1, 1             #desloca o 1 para a esquerda
+    j loop
+
+verifia_1s:
+    li $t6, 2                   #t6 = 2
+    div $t0, $t6                #qtde 1s/2
+    mfhi $v0                    #v0 = resto da divisao
+    move $v1, $a0
+    bne $v0, 0, soma128
+    jr $ra
+
+soma128:    
+    addi $v1, $v1, 128          #v1 = a0 + 128
+    jr $ra                      #volta para o caller
+    

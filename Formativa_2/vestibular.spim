@@ -1,0 +1,79 @@
+.data
+    quebra_l: .asciiz "\n"
+    
+    gabarito: .space 100
+    resposta: .space 100
+
+.text
+    #t0 => guarda endereco das strings para a funcao input_string
+    #s0 => qtde de questoes (n)
+    #s3 => nota final
+    #s4 => contador
+    main:
+        #iniciar nota e contador em 0
+        move $s3, $zero
+        move $s4, $zero
+        
+        #ler n
+        li $v0, 5 #codigo de input int
+        syscall
+        move $s0, $v0 # s0 = n 
+
+        #ler string de gabarito
+        la $s1, gabarito #endereco da string gabarito
+        li $v0, 8 #codigo de input string
+        la $a0, gabarito #coloca o endereco da string desejada de t0 para a0
+        li $a1, 99 #tam da string = n
+        syscall
+
+        #ler string de resposta
+        la $s2, resposta #endereco da string resposta
+        li $v0, 8 #codigo de input string
+        la $a0, resposta #coloca o endereco da string desejada de t0 para a0
+        li $a1, 99 #tam da string = n
+        syscall
+
+        j compara_gabarito
+
+    compara_gabarito:
+        slt $t3, $s4, $s0 #se contador < n, t3 = 1
+        beq $t3, 0, fim
+
+        lb $t1, 0($s1) #pega letra do gabarito
+        lb $t2, 0($s2) #pega letra da resposta
+        beq $t1, $t2, soma_nota #verifica se gabarito e resposta sao iguais
+
+        addi $s4, $s4, 1 #contador++
+        addi $s1, $s1, 1 #proxima letra da resposta
+        addi $s2, $s2, 1 #proxima letra do gabarito
+        j compara_gabarito
+
+    soma_nota:
+        addi $s3, $s3, 1 #nota++
+        addi $s4, $s4, 1 #contador++
+        addi $s1, $s1, 1 #proxima letra da resposta
+        addi $s2, $s2, 1 #proxima letra do gabarito
+        j compara_gabarito
+
+
+
+    input_string:
+        li $v0, 8 #codigo de input string
+        move $a0, $t0 #coloca o endereco da string desejada de t0 para a0
+        move $a1, $s0 #tam da string = n
+        syscall
+        jr $ra
+
+    fim:
+        #printa nota
+        li $v0, 1
+        move $a0, $s3
+        syscall
+        #quebra linha
+        li $v0, 4
+        la $a0, quebra_l
+        syscall
+        #encerra
+        li $v0, 10
+        syscall
+
