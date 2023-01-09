@@ -3,45 +3,31 @@
 
 .text
     main:
-        #Inserir n
-        li $v0, 5
+        li $v0, 5                   #Inserir n
         syscall
-        #Armazenar n em $t0
-        move $t0, $v0
-        #carrega 0 em t4
-        li $t4, 0
-        #Inserir 1o numero
-        li $v0, 5
+        move $t0, $v0               #Armazenar n em $t0
+        li $t4, 0                   #t4 = contador
+        li $v0, 5                   #Inserir 1o numero
         syscall
-        #Armazenar 1o numero em $t1
-        move $t1, $v0
+        move $t1, $v0               #Armazenar 1o numero em $t1
 
     insere_compara:
-        #soma 1 em t4
-        addi $t4, $t4, 1
-        #se t4 = n vai pro fim
-        beq $t4, $t0, fim
-        #Inserir 2o numero
-        li $v0, 5
+        addi $t4, $t4, 1            #contador++
+        beq $t4, $t0, fim           #se contador = n vai pro fim
+        li $v0, 5                   #Inserir 2o numero
         syscall
-        #Armazenar 2o numero em $t2
-        move $t2, $v0
-        #Compara o t1 e o t2 numero
-        slt $t3, $t1, $t2  # se t1 < t2 => t3 = 1
-        beq $t3, 0, insere_compara
-        move $t1, $t2 #t1 = t2
-        #volta pra insere compara
-        j insere_compara
+        move $t2, $v0               #Armazenar 2o numero em $t2
+        slt $t3, $t1, $t2           #se t1 < t2 => t3 = 1
+        beq $t3, 0, insere_compara  #se t3 = 0 (t1 > t2), volta para insere_compara
+        move $t1, $t2               #t1 = t2
+        j insere_compara            #volta pra insere compara
 
     fim:
-        #imprime o maior numero
-        li $v0, 1
+        li $v0, 1                   #imprime o maior numero
         move $a0, $t1
         syscall
-        #Quebra de linha
-        li $v0, 4
+        li $v0, 4                   #Quebra de linha
         la $a0, quebra_l
         syscall
-        #encerra o programa
-        li $v0, 10
+        li $v0, 10                  #encerra o programa
         syscall

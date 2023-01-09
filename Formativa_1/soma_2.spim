@@ -3,32 +3,18 @@
 
 .text
 main:
-
-    #Inserir 1o numero
-    li $v0, 5
+    li $v0, 5               #Inserir 1o numero
     syscall
-
-    #Armazenar 1o numero em $t0
-    move $t0, $v0
-
-    #inserir 2o numero
-    li $v0, 5
+    move $t0, $v0           #Armazenar 1o numero em $t0
+    li $v0, 5               #inserir 2o numero
     syscall
-
-    #Armazenar o 2o numero em $t1
-    move $t1, $v0
-
-    #somar e mostrar resultado
-    add $t2, $t0, $t1
+    move $t1, $v0           #Armazenar o 2o numero em $t1
+    add $t2, $t0, $t1       #somar e mostrar resultado
     li $v0, 1
     move $a0, $t2
     syscall
-
-    #Quebra de linha
-    li $v0, 4
+    li $v0, 4               #Quebra de linha
     la $a0, quebra_l
     syscall
-
-    #Encerrar
-    li $v0, 10
+    li $v0, 10              #Encerrar
     syscall

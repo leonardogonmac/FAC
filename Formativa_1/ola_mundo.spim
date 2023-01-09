@@ -4,11 +4,8 @@
 .text
 main:
 
-    #Imprime a string 'ola'
-    li $v0, 4
+    li $v0, 4           #Imprime a string 'ola'
     la $a0, ola
     syscall
-
-    #Encerrar
-    li $v0, 10
+    li $v0, 10          #Encerrar
     syscall
