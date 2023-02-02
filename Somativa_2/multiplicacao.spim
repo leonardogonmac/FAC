@@ -1,0 +1,78 @@
+.data
+    quebra_l:   .asciiz     "\n"
+
+.text
+main:
+    li $a0, 3                       #x
+    li $a1, -5                       #y
+    jal multfac
+    j fim
+
+multfac:
+    move $t4, $zero                 #t4 = contador
+    move $t3, $zero                 #t3 = resultado
+    move $t0, $a0                   #t0 = x
+    move $t9, $a1                   #t9 = y
+    li $t1, 1                       #t1 = mascara
+
+    addi $t5, $zero, -32768         #t5 = 100...000
+    and $t8, $t5, $t0               #ve se x positivo
+    bne $t8, $zero modulo_a0        #se x negativo tira o modulo
+    and $t8, $t5, $t9               #ve se y positivo
+    bne $t8, $zero, modulo_a1       #se y negativo tira o modulo
+    j and_mascara
+
+modulo_a0:
+    nor $t0, $t0, $zero             #x = NOT x
+    addi $t0, $t0, 1                #complemento a 2
+    and $t8, $t5, $t9               #ve se y positivo
+    bne $t8, $zero, modulo_a1       #se y negativo tira o modulo
+    j and_mascara
+
+modulo_a1:
+    nor $t9, $a1, $zero
+    addi $t9, $t9, 1
+    j and_mascara
+
+and_mascara:    
+    beq $t4, 31, def_sinal          #se contador == 31, sai da multiplicacao
+    and $t2, $t9, $t1               #t2 = y AND mascara
+    bne $t2, $zero, incrementa      #se o bit for 1, incrementa
+    sll $t0, $t0, 1                 #x = x*2
+    sll $t1, $t1, 1                 #mascara -> desloca o 1 p/ esquerda
+    addi $t4, $t4, 1                #contador++
+    j and_mascara
+
+incrementa:
+    add $t8, $t3, $t0               #t3 += t0
+    
+    
+
+    sll $t0, $t0, 1                 #x = x*2
+    sll $t1, $t1, 1                 #mascara -> desloca o 1 p/ esquerda
+    addi $t4, $t4, 1                #contador++
+    j and_mascara
+
+def_sinal:
+    
+    and $t6, $t5, $a0
+    and $t7, $t5, $a1
+    beq $t6, $t7, positivo
+    nor $t3, $t3, $zero             #t3 = NOT t3
+    addi $t3, $t3, 1
+    jr $ra
+
+positivo:
+    jr $ra
+
+fim:
+    li $v0, 1
+    move $a0, $t3
+    syscall
+
+    li $v0, 4                       #quebra linha
+    la $a0, quebra_l
+    syscall
+
+    li $v0, 10
+    syscall

@@ -1,0 +1,92 @@
+.data
+    quebra_l:   .asciiz     "\n"
+
+.text
+main:
+    li $a0, -3                      #multiplicando
+    li $a1, 4                       #multiplicador
+    jal multfac
+    j fim
+
+multfac:
+    move $t2, $zero                 #numero de $lo 
+    move $t3, $zero                 #numero de $hi
+    move $t4, $zero                 #extensor de $lo para overflow (determina o "tamanho" do overflow)
+    move $t5, $zero                 #determina se sinais sao iguais ou diferentes
+
+    slt $t0, $a0, $zero             #se a0 < 0  t0 = 1
+    slt $t1, $a1, $zero             #se a1 < 0  t1 = 1
+
+    beq $t0, $zero, a0_positivo     #se a0 < 0, tira o modulo pelo complemento a 2
+    
+    nor $a0, $a0, $zero             #complemento a 2 de a0
+    addi $a0, $a0, 1
+
+a0_positivo:
+    beq $t1, $zero, a1_positivo    #se a1 < 0, tira o modulo pelo complemento de 2
+
+    nor $a1, $a1, $zero             #complemento a 2 de a1
+    addi $a1, $a1, 1
+
+a1_positivo:
+    beq $t0, $t1, guarda_valores
+    addi $t5, $t5, 1                #se os sinais forem diferentes t5 = 1
+
+guarda_valores:
+    move $t0, $a0                   #t0 = multiplicando
+    move $t1, $a1                   #t1 = multiplicador
+
+produto:
+    andi $t9, $t1, 1    
+    bne $t9, $zero, soma            #se o bit for 1, soma   
+    
+proximo_bit:
+    srl $t7, $t0, 31                #pega o bit de sinal do multiplicando
+
+    sll $t0, $t0, 1                 #aumenta a ordem de grandeza do multiplicando
+    sll $t4, $t4, 1                 #aumenta a ordem de grandeza do extensor
+    addu $t4, $t4, $t7              #soma o bit de sinal no extensor
+    srl $t1, $t1, 1                 #prepara o proximo bit do multiplicador
+    bne $t1, $zero, produto         #enquanto o multiplicador nao for zero, continua
+    j verifica_sinais
+
+soma:    
+    addu $t2, $t2, $t0              #lo = lo + multiplicando
+    sltu $t8, $t2, $t0              #detecta overflow
+    addu $t3, $t3, $t8              #hi = hi + bit overflow 
+    addu $t3, $t3, $t4              #hi = hi + extensor
+    j proximo_bit
+
+verifica_sinais:
+    beq $t5, $zero, acabou          #se os sinais forem iguais, nao altera nada
+    nor $t3, $t3, $zero             #nega o hi se os sinais forem diferentes
+    nor $t2, $t2, $zero             #complemento a 2 de lo se sinais diferentes
+    addi $t2, $t2, 1
+
+    j acabou
+
+acabou:
+    mtlo $t2
+    mthi $t3
+    
+    jr $ra
+
+fim:
+    li $v0, 1                       #printa $lo
+    move $a0, $t2
+    syscall
+
+    li $v0, 4                       #quebra linha
+    la $a0, quebra_l
+    syscall
+
+    li $v0, 1                       #printa $hi
+    move $a0, $t3
+    syscall
+
+    li $v0, 4                       #quebra linha
+    la $a0, quebra_l
+    syscall
+
+    li $v0, 10                      #fim
+    syscall
