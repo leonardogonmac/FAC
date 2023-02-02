@@ -3,8 +3,8 @@
 
 .text
 main:
-    li $a0, -3                      #multiplicando
-    li $a1, 4                       #multiplicador
+    li $a0, 170000000                      #multiplicando
+    li $a1, 1000                         #multiplicador
     jal multfac
     j fim
 
@@ -17,18 +17,21 @@ multfac:
     slt $t0, $a0, $zero             #se a0 < 0  t0 = 1
     slt $t1, $a1, $zero             #se a1 < 0  t1 = 1
 
-    beq $t0, $zero, a0_positivo     #se a0 < 0, tira o modulo pelo complemento a 2
-    
+    bne $t0, $zero, modulo_a0       #se a0 < 0, tira o modulo pelo complemento a 2
+    bne $t1, $zero, modulo_a1
+    j guarda_valores
+
+modulo_a0:
     nor $a0, $a0, $zero             #complemento a 2 de a0
     addi $a0, $a0, 1
+   
+    bne $t1, $zero, modulo_a1       #se a1 < 0, tira o modulo pelo complemento de 2
+    addi $t5, $t5, 1                #se os sinais forem diferentes t5 = 1
+    j guarda_valores
 
-a0_positivo:
-    beq $t1, $zero, a1_positivo    #se a1 < 0, tira o modulo pelo complemento de 2
-
+modulo_a1:
     nor $a1, $a1, $zero             #complemento a 2 de a1
     addi $a1, $a1, 1
-
-a1_positivo:
     beq $t0, $t1, guarda_valores
     addi $t5, $t5, 1                #se os sinais forem diferentes t5 = 1
 
