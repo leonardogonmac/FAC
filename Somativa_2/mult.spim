@@ -1,13 +1,3 @@
-.data
-    quebra_l:   .asciiz     "\n"
-
-.text
-main:
-    li $a0, 170000000                      #multiplicando
-    li $a1, 1000                         #multiplicador
-    jal multfac
-    j fim
-
 multfac:
     move $t2, $zero                 #numero de $lo 
     move $t3, $zero                 #numero de $hi
@@ -73,23 +63,3 @@ acabou:
     mthi $t3
     
     jr $ra
-
-fim:
-    li $v0, 1                       #printa $lo
-    move $a0, $t2
-    syscall
-
-    li $v0, 4                       #quebra linha
-    la $a0, quebra_l
-    syscall
-
-    li $v0, 1                       #printa $hi
-    move $a0, $t3
-    syscall
-
-    li $v0, 4                       #quebra linha
-    la $a0, quebra_l
-    syscall
-
-    li $v0, 10                      #fim
-    syscall
